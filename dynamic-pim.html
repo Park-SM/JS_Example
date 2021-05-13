@@ -1,0 +1,227 @@
+<html>
+    <head>
+        <title>Dynamic-PIM</title>
+        <script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    </head>
+    <body>
+        <button type="button" class="btn btn-primary" style="margin:30px;" onClick="addTable()">테이블 추가</button>
+        <div id="tableContainer"></div>
+
+        <script>
+            class Table {
+                static seqTableIdx = 1;
+                static tables = {};
+
+                constructor() {
+                    this.id = Table.seqTableIdx++;
+                    this.seqMemberIdx = 1;
+                    this.members = {};
+                    this.isEditMode = false;
+
+                    this.#initTableHTML();
+
+                    this.tagMemberContainer = $("#member-container-" + this.id);
+                    this.tagAddDlg = $("#addDlg-" + this.id);
+                    this.tagBtnAdd = $("#btnAdd-" + this.id);
+                    this.tagBtnExit = $("#btnExit-" + this.id);
+                    this.tagBtnSubmit = $("#btnSubmit-" + this.id);
+                    this.tagId = $("#id-" + this.id);
+                    this.tagName = $("#name-" + this.id);
+                    this.tagEmail = $("#email-" + this.id);
+                    this.tagGender = $("#gender-" + this.id);
+                    this.tagAge = $("#age-" + this.id);
+                    this.tagHobby = $("#hobby-" + this.id);
+
+                    this.#initOnClick(this);
+
+                    Table.tables[this.id] = this;
+                }
+                
+                #initTableHTML() {
+                    // 회원 정보 테이블
+                    $("#tableContainer").append(`
+                        <div id="table-${this.id}" style="width:1500px; margin: 50px auto 0 auto; padding:20px; border: solid; border-color:gray; border-radius: 10px;">
+                            <div>
+                                <h3 style="float:left;"><b>${this.id}번 회원 정보</b></h3>
+                                <button type="button" id="btnAdd-${this.id}" class="btn btn-primary" style="float:right;">추가</button>
+                            </div>
+                            <table class="table">
+                                <thead>
+                                    <th scope="col" width="5%">#</th>
+                                    <th scope="col" width="10%">이름</th>
+                                    <th scope="col" width="15%">이메일</th>
+                                    <th scope="col" width="10%">성별</th>
+                                    <th scope="col" width="10%">나이</th>
+                                    <th scope="col">취미</th>
+                                    <th scope="col" width="10%">옵션</th>
+                                </thead>
+                                <tbody id="member-container-${this.id}"></tbody>
+                            </table>
+                        </div>
+                    `);
+                    
+                    // 회원 추가 다이어로그
+                    $("body").append(`
+                        <div id="addDlg-${this.id}" style="display: none;position:absolute; width:1024px; left:50%; top:90px; margin-left: -512px; padding:30px; border: solid; border-color: gray; border-radius: 10px; background-color:#FFFFFF; box-shadow: 3px 5px #cdcdcd;">
+                            <div>
+                                <h3 style="float:left;"><b>${this.id}번 회원 추가</b></h3>
+                                <button type="button" id="btnExit-${this.id}" class="btn btn-light" style="float:right;">─</button>
+                            </div>
+                            <table class="table">
+                                <intput type="hidden" id="id-${this.id}"/>
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">이름</th>
+                                        <td><input type="test" id="name-${this.id}" style="width:100%"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">이메일</th>
+                                        <td><input type="email" id="email-${this.id}" style="width:100%"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">성별</th>
+                                        <td><input type="test" id="gender-${this.id}" style="width:100%"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">나이</th>
+                                        <td><input type="number" id="age-${this.id}" style="width:100%"/></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">취미</th>
+                                        <td><input type="test" id="hobby-${this.id}" style="width:100%"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="button" id="btnSubmit-${this.id}" class="btn btn-primary" style="float:right;">추가</button>
+                        </div>
+                    `);
+                }
+
+                #initOnClick(obj) {
+                    obj.tagBtnAdd.click(function() {
+                        obj.tagAddDlg.show();
+                    });
+                    obj.tagBtnExit.click(function() {
+                        obj.isEditMode = false;
+                        obj.tagAddDlg.hide();
+                        obj.tagId.val("");
+                        obj.tagName.val("");
+                        obj.tagEmail.val("");
+                        obj.tagGender.val("");
+                        obj.tagAge.val("");
+                        obj.tagHobby.val("");
+                    });
+                    obj.tagBtnSubmit.click(function() {
+                        if (obj.tagName.val().length == 0) {
+                            alert("이름을 입력해주세요.");
+                            obj.tagName.focus();
+                            return;
+                        }
+                        if (obj.tagEmail.val().length == 0) {
+                            alert("이메일을 입력해주세요.");
+                            obj.tagEmail.focus();
+                            return;
+                        }
+                        if (!obj.tagEmail.val().includes('@')) {
+                            alert("올바른 이메일 형식을 입력해주세요.");
+                            obj.tagEmail.focus();
+                            return;
+                        }
+                        if (obj.tagGender.val().length == 0) {
+                            alert("성별을 입력해주세요.");
+                            obj.tagGender.focus();
+                            return;
+                        }
+                        if (obj.tagAge.val().length == 0) {
+                            alert("나이를 입력해주세요.");
+                            obj.tagAge.focus();
+                            return;
+                        }
+                        if (obj.tagHobby.val().length == 0) {
+                            alert("취미를 입력해주세요.");
+                            obj.tagHobby.focus();
+                            return;
+                        }
+
+                        const m = new Member(
+                            obj.tagId.val(),
+                            obj.tagName.val(),
+                            obj.tagEmail.val(),
+                            obj.tagGender.val(),
+                            obj.tagAge.val(),
+                            obj.tagHobby.val()
+                        );
+                        if (!obj.isEditMode) m.id = obj.seqMemberIdx++;
+                        obj.members[m.id] = m;
+
+                        obj.#notifyDataSetChanged();
+                        obj.tagBtnExit.trigger("click");
+                    });
+                }
+
+                // 테이블을 지우고 회원 정보를 다시 그림.
+                #notifyDataSetChanged() {
+                    this.tagMemberContainer.empty();
+                    if (!Object.keys(this.members).length) return;
+
+                    const memArr = Object.values(this.members);
+                    memArr.sort( (a, b) => a.id - b.id);
+                    for (const m of memArr) { 
+                        this.tagMemberContainer.append(`
+                            <tr id="member_${m.id}">
+                                <th scope="row">${m.id}</th>
+                                <td>${m.name}</td>
+                                <td>${m.email}</td>
+                                <td>${m.gender}</td>
+                                <td>${m.age}</td>
+                                <td>${m.hobby}</td>
+                                <td>
+                                    <button type="button" class="btn-sm btn-info" onClick="Table.editMember(${this.id}, ${m.id});">수정</button>
+                                    <button type="button" class="btn-sm btn-danger" onClick="Table.removeMember(${this.id}, ${m.id});">삭제</button>
+                                </td>
+                            </tr>
+                        `);
+                    }
+                }
+
+                static editMember(tid, mid) {
+                    const table = Table.tables[tid];
+
+                    table.isEditMode = true;
+                    table.tagAddDlg.show();
+                    table.tagId.val(mid);
+                    table.tagName.val(table.members[mid].name);
+                    table.tagEmail.val(table.members[mid].email);
+                    table.tagGender.val(table.members[mid].gender);
+                    table.tagAge.val(table.members[mid].age);
+                    table.tagHobby.val(table.members[mid].hobby);
+                }
+
+                static removeMember(tid, mid) {
+                    const table = Table.tables[tid];
+                    delete table.members[mid];
+                    table.#notifyDataSetChanged();
+                }
+            }
+
+            class Member {
+                
+                constructor(id, name, email, gender, age, hobby) {
+                    this.id = id;
+                    this.name = name;
+                    this.email = email;
+                    this.gender = gender;
+                    this.age = age;
+                    this.hobby = hobby;
+                }
+            }
+            
+            addTable();
+
+            function addTable() {
+                new Table();
+            }
+        </script>
+    </body>
+</html>
