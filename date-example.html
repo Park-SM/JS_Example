@@ -1,0 +1,65 @@
+<html>
+    <head>
+        <title>Date Example</title>
+    </head>
+    <body>
+        콘솔 확인 바람.
+
+        <script type="text/javascript">
+            console.log("=== 현재시간 =============");
+            const now = new Date();
+            console.log(`UTC : ${now}`);
+            console.log(`KOR : ${now.toLocaleString()}`);
+
+            const target = new Date("2021-05-20T00:00:00");
+
+            console.log("=== 차이 구하기 ==========");
+            console.log(`2021.05.20 00:00과 일수 차이 계산  : ${getDiffDate(target)}`);
+            console.log(`2021.05.20 00:00과 시간 차이 계산  : ${getDiffHour(target)}`);
+            console.log(`2021.05.20 00:00과 분 차이 계산    : ${getDiffMinute(target)}`);
+            console.log(`2021.05.20 00:00과 전체 차이 계산  : ${getDiffDateTime(target)}`);
+
+            console.log("=== Date to String ======");
+            console.log(`new Date("2021-05-20T00:00:00") -> ${dateToString(target)}`);
+            console.log(`new Date("2021-05-20T00:00:00") -> ${datetimeToString(target)}`);
+
+            // 일 수 차이 계산
+            function getDiffDate(target) {
+                return `${Math.ceil((target.getTime() - Date.now()) / (1000 * 60 * 60 * 24))}일`;
+            }
+
+            // 시간 차이 계산
+            function getDiffHour(target) {
+                const h = Math.floor((target.getTime() - Date.now()) / (1000 * 60 * 60));
+                return `${h}시간`;
+            }
+
+            // 분 차이 계산
+            function getDiffMinute(target) {
+                const m = Math.ceil((target.getTime() - Date.now()) / (1000 * 60));
+                return `${m}분`;
+            }
+
+            // 일 수, 시간, 분 차이 계산
+            function getDiffDateTime(target) {
+                const d = Math.floor((target.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+                const h = Math.floor((target.getTime() - Date.now()) / (1000 * 60 * 60) % 24);
+                const m = Math.ceil(((target.getTime() - Date.now()) / (1000 * 60)) % 60);
+                return `${d}일 ${h}시간 ${m}분`;
+            }
+
+            // Date를 yyyy-MM-dd 문자열로 변환
+            function dateToString(d) {
+                return `${d.getFullYear()}-${("0" + (d.getMonth() + 1)).slice(-2)}-${("0" + d.getDate()).slice(-2)}`;
+            }
+
+            // Date를 yyyy-MM-ddThh:mm:ss 문자열로 변환
+            function datetimeToString(d) {
+                const date = `${d.getFullYear()}-${("0" + (d.getMonth() + 1)).slice(-2)}-${("0" + d.getDate()).slice(-2)}`;
+                const time = `${("0" + d.getHours()).slice(-2)}:${("0" + d.getMinutes()).slice(-2)}:${("0" + d.getSeconds()).slice(-2)}`;
+                return `${date}T${time}`;
+            }
+
+        </script>
+    </body>
+</html>
