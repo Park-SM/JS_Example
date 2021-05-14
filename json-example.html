@@ -1,0 +1,37 @@
+<html>
+    <head>
+        <title>JSON example</title>
+    </head>
+    <body>
+        개발자 콘솔 확인 바람.
+        
+        <script type="text/javascript">
+            const data = {
+                name:"박상민",
+                age:25,
+                email:"park97.sm@gmail.com",
+                address:"서울시 은평구 서오릉로 258 (우남아파트 101동 1101호)"
+            };
+
+            console.log("======== Data");
+            console.log(data);
+
+            // typeof는 Primitive형 비교할 때, instanceof는 클래스형 비교할 때 사용
+            console.log("============ Type 비교")
+            console.log(`typeof data:${typeof data}`);
+            console.log(`typeof JSON.stringify(data):${typeof JSON.stringify(data)}`);
+            console.log(`typeof JSON.parse(JSON.stringify(data)):${typeof JSON.parse(JSON.stringify(data))}}`);
+
+            const jsnStr = JSON.stringify(data);
+            console.log("=============== Data string");
+            console.log(jsnStr);
+
+            const parsed = JSON.parse(jsnStr);
+            console.log("================== Data content");
+            console.log(`name:${parsed.name}`);
+            console.log(`age:${parsed.age}`);
+            console.log(`email:${parsed.email}`);
+            console.log(`address:${parsed.address}`);
+        </script>
+    </body>
+</html>
